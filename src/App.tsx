@@ -37,12 +37,14 @@ export default function App() {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [answers, setAnswers] = useState<UserAnswer[]>([]);
   const [showResults, setShowResults] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showCover, setShowCover] = useState(true);
 
   const fetchQuestions = useCallback(async () => {
     setIsLoading(true);
     setError(null);
+    setShowCover(false);
     try {
       const newQuestions = await generateGrammarQuestions();
       setQuestions(newQuestions);
@@ -57,10 +59,6 @@ export default function App() {
       setIsLoading(false);
     }
   }, []);
-
-  useEffect(() => {
-    fetchQuestions();
-  }, [fetchQuestions]);
 
   const currentQuestion = questions[currentIndex];
   const isCorrect = selectedOption === currentQuestion?.correctAnswer;
@@ -104,38 +102,72 @@ export default function App() {
     return "加油，像芙莉莲一样在漫长岁月中积累知识吧！📚";
   };
 
+  if (showCover) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden bg-indigo-950">
+        {/* Magical CSS Background */}
+        <div className="fixed inset-0 z-0 bg-[radial-gradient(circle_at_50%_50%,rgba(99,102,241,0.2),transparent_70%)]" />
+        <div className="fixed inset-0 z-0 opacity-20" style={{ backgroundImage: 'radial-gradient(#818cf8 1px, transparent 1px)', backgroundSize: '30px 30px' }} />
+        
+        <motion.div 
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="relative z-10 bg-white/10 backdrop-blur-2xl p-8 md:p-12 rounded-[2.5rem] md:rounded-[3rem] border border-white/20 text-center max-w-[90%] md:max-w-2xl shadow-2xl mx-4"
+        >
+          <motion.div
+            animate={{ y: [0, -10, 0], rotate: [0, 5, -5, 0] }}
+            transition={{ duration: 6, repeat: Infinity }}
+            className="mb-6 md:mb-8 inline-flex items-center justify-center w-24 h-24 md:w-32 md:h-32 rounded-full bg-gradient-to-br from-indigo-500 to-purple-500 border-4 border-white/50 shadow-xl text-white"
+          >
+            <Sparkles size={64} className="animate-pulse" />
+          </motion.div>
+          
+          <h1 className="text-4xl md:text-6xl font-black text-white mb-4 tracking-tighter drop-shadow-lg">
+            魔法之旅
+          </h1>
+          <p className="text-indigo-100 text-lg md:text-xl mb-8 md:mb-10 font-medium leading-relaxed">
+            “语法也是一种魔法，需要漫长的岁月去精进。”<br className="hidden md:block"/>
+            开启属于你的英语句法探索之旅。
+          </p>
+          
+          <button 
+            onClick={fetchQuestions}
+            className="group relative px-8 md:px-12 py-4 md:py-5 bg-white text-indigo-900 rounded-2xl font-black text-xl md:text-2xl shadow-2xl hover:scale-105 active:scale-95 transition-all flex items-center gap-3 mx-auto"
+          >
+            <Sparkles className="text-indigo-500 group-hover:rotate-12 transition-transform" />
+            开启旅程
+          </button>
+        </motion.div>
+      </div>
+    );
+  }
+
   if (isLoading) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden">
-        <div 
-          className="fixed inset-0 z-[-1] bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: 'url("https://images.alphacoders.com/133/1333488.png")' }}
-        />
-        <div className="fixed inset-0 z-[-1] bg-indigo-950/60 backdrop-blur-md" />
+      <div className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden bg-indigo-950">
+        <div className="fixed inset-0 z-0 bg-[radial-gradient(circle_at_50%_50%,rgba(99,102,241,0.2),transparent_70%)]" />
+        <div className="fixed inset-0 z-1 bg-indigo-950/60 backdrop-blur-md" />
         <motion.div 
           animate={{ rotate: 360 }}
           transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-          className="text-indigo-400 mb-6"
+          className="relative z-10 text-indigo-400 mb-6"
         >
           <Loader2 size={64} />
         </motion.div>
-        <h2 className="text-2xl font-black text-white tracking-widest animate-pulse">
+        <h2 className="relative z-10 text-2xl font-black text-white tracking-widest animate-pulse text-center px-4">
           正在通过魔法生成新题目...
         </h2>
-        <p className="text-indigo-200 mt-4 font-medium">芙莉莲正在翻阅她的魔导书</p>
+        <p className="relative z-10 text-indigo-200 mt-4 font-medium">正在翻阅魔导书</p>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden">
-        <div 
-          className="fixed inset-0 z-[-1] bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: 'url("https://images.alphacoders.com/133/1333488.png")' }}
-        />
-        <div className="fixed inset-0 z-[-1] bg-indigo-950/60 backdrop-blur-md" />
-        <div className="bg-white/10 backdrop-blur-xl p-8 rounded-3xl border border-white/20 text-center max-w-md">
+      <div className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden bg-indigo-950">
+        <div className="fixed inset-0 z-0 bg-[radial-gradient(circle_at_50%_50%,rgba(99,102,241,0.2),transparent_70%)]" />
+        <div className="fixed inset-0 z-1 bg-indigo-950/60 backdrop-blur-md" />
+        <div className="relative z-10 bg-white/10 backdrop-blur-xl p-8 rounded-3xl border border-white/20 text-center max-w-md mx-4">
           <AlertCircle size={48} className="text-rose-400 mx-auto mb-4" />
           <h2 className="text-xl font-bold text-white mb-4">{error}</h2>
           <button 
@@ -151,15 +183,13 @@ export default function App() {
 
   if (showResults) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm relative">
-        <div 
-          className="fixed inset-0 z-[-1] bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: 'url("https://images.alphacoders.com/133/1333488.png")' }}
-        />
+      <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden bg-indigo-950">
+        <div className="fixed inset-0 z-0 bg-[radial-gradient(circle_at_50%_50%,rgba(99,102,241,0.2),transparent_70%)]" />
+        <div className="fixed inset-0 z-1 bg-slate-900/40 backdrop-blur-sm" />
         <motion.div 
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="bg-white/90 backdrop-blur-md rounded-3xl shadow-2xl p-8 max-w-md w-full text-center border border-indigo-100"
+          className="relative z-10 bg-white/90 backdrop-blur-md rounded-3xl shadow-2xl p-8 max-w-md w-full text-center border border-indigo-100"
         >
           <div className="mb-6 inline-flex p-4 bg-indigo-50 rounded-full text-indigo-600">
             <Trophy size={48} />
@@ -201,32 +231,14 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen font-sans relative overflow-hidden selection:bg-indigo-500/30">
-      {/* Main Frieren Background Image */}
-      <div 
-        className="fixed inset-0 z-[-1] bg-cover bg-center bg-no-repeat transition-transform duration-[60s] scale-125 animate-[pulse_10s_infinite]"
-        style={{ 
-          backgroundImage: 'url("https://images.alphacoders.com/133/1333488.png")',
-        }}
-      />
-      {/* Overlay for readability - deeper blue/purple for magical feel */}
-      <div className="fixed inset-0 z-[-1] bg-indigo-950/40 backdrop-blur-[3px]" />
+    <div className="min-h-screen font-sans relative overflow-hidden selection:bg-indigo-500/30 bg-indigo-950">
+      {/* Magical CSS Background */}
+      <div className="fixed inset-0 z-0 bg-[radial-gradient(circle_at_50%_50%,rgba(99,102,241,0.2),transparent_70%)]" />
+      <div className="fixed inset-0 z-0 opacity-10" style={{ backgroundImage: 'radial-gradient(#818cf8 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
       
-      {/* Floating Frieren Character Sprite - More prominent */}
-      <motion.div 
-        initial={{ opacity: 0, x: 100 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ delay: 0.5, duration: 1 }}
-        className="fixed bottom-0 right-[-5%] z-0 pointer-events-none hidden xl:block"
-      >
-        <img 
-          src="https://static.zerochan.net/Frieren.full.4046187.png" 
-          alt="Frieren" 
-          className="h-[90vh] object-contain drop-shadow-[0_0_50px_rgba(165,180,252,0.4)]"
-          referrerPolicy="no-referrer"
-        />
-      </motion.div>
-
+      {/* Overlay for readability */}
+      <div className="fixed inset-0 z-1 bg-indigo-950/40 backdrop-blur-[2px]" />
+      
       {/* Header */}
       <header className="bg-white/10 backdrop-blur-xl border-b border-white/10 sticky top-0 z-20">
         <div className="max-w-4xl mx-auto px-4 h-16 flex items-center justify-between">
@@ -234,7 +246,7 @@ export default function App() {
             <div className="bg-indigo-600/80 p-2 rounded-xl text-white shadow-lg shadow-indigo-500/20">
               <GraduationCap size={20} />
             </div>
-            <h1 className="font-black text-xl tracking-tight text-white drop-shadow-md">FRIEREN GRAMMAR</h1>
+            <h1 className="font-black text-xl tracking-tight text-white drop-shadow-md uppercase">Magic Grammar</h1>
           </div>
           
           <div className="flex-1 max-w-xs mx-6">
@@ -270,11 +282,16 @@ export default function App() {
               <div className="flex items-center justify-between mb-8 relative z-10">
                 <div className="flex items-center gap-4">
                   <DifficultyBadge difficulty={currentQuestion.difficulty} />
-                  <span className="text-xs font-black text-indigo-200 uppercase tracking-[0.3em] drop-shadow-sm">
-                    {currentQuestion.category}
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-black text-indigo-200 uppercase tracking-[0.3em] drop-shadow-sm">
+                      {currentQuestion.category}
+                    </span>
+                    <div className="w-8 h-8 rounded-full bg-indigo-500/30 flex items-center justify-center text-indigo-200 border border-white/20">
+                      <Sparkles size={16} />
+                    </div>
+                  </div>
                 </div>
-                <div className="text-xs font-black text-white/60 tracking-widest">5 MANA POINTS</div>
+                <div className="text-xs font-black text-white/60 tracking-widest uppercase">5 Mana Points</div>
               </div>
 
               <div className="text-2xl md:text-3xl leading-relaxed text-white font-bold mb-12 drop-shadow-md relative z-10">
